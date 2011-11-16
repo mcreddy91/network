@@ -16,6 +16,7 @@ def connect(hostname, user, pw):
     return t
 
 def run_command(t, cmd):
+    """Run a command and automatically page through the output."""
     t.write(cmd + '\n')
     index, match, text = t.expect([re.escape('\n--More-- or (q)uit'),
                                    re.escape('\n(Cisco Controller) >')])

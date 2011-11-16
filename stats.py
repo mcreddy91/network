@@ -33,7 +33,8 @@ def current_stats():
     for mac, ip, traffic in wireless.get_all_info(c.get('wifi', 'hostname'),
                                                   c.get('wifi', 'user'),
                                                   c.get('wifi', 'pass')):
-        result[mac].update({'wifi': True, 'traffic': traffic, 'ip': ip})
+        if mac in result:
+            result[mac].update({'wifi': True, 'traffic': traffic, 'ip': ip})
     return result
 
 def subtract_stats(now, before):
@@ -47,7 +48,7 @@ def subtract_stats(now, before):
 
 s1 = current_stats()
 import time
-time.sleep(60)
+time.sleep(5)
 s2 = current_stats()
 
 result = subtract_stats(s2, s1)
