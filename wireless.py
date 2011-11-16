@@ -29,7 +29,7 @@ def get_client_info(t, mac_addr):
     """Returns (ip_address, bytes_received, bytes_sent) for the given MAC address."""
     res = run_command(t, 'show client detail {0}'.format(mac_addr))
     index = res.index('Client Statistics:')
-    return res[9].split()[-1], res[index+1].split()[-1], res[index+2].split()[-1]
+    return res[9].split()[-1], (res[index+1].split()[-1], res[index+2].split()[-1])
 
 def get_all_info(hostname, user, pw):
     """Returns [(mac_addr, ip_addr, bytes_rcvd, bytes_sent), ...] for all clients."""

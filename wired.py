@@ -29,7 +29,7 @@ def get_netgear_port_traffic(hostname, community):
                             Version = 2,
                             Community = community,
                             DestHost = hostname)
-    return zip(range(1,49), rcvd, sent)
+    return zip(range(1,49), zip(rcvd, sent))
 
 def get_cisco_routing_table(hostname):
     """Returns [(mac_addr, ip_addr), ...]."""

@@ -2,34 +2,35 @@
 
 import ConfigParser, socket, wired, wireless
 
-c = ConfigParser.ConfigParser()
-c.readfp(open('network.cfg'))
+def current_stats():
+    """Return a dict mapping MAC addresses to client information.
+    
+    Fields of each client information dictionary:
+    'switch' -- either 'wifi' or the tuple (switch_name, port)
+    'ip' -- the most recent known IP address.  Not necessarily current.
+    'traffic' -- the tuple (bytes received, bytes sent).
+    """
+    c = ConfigParser.ConfigParser()
+    c.readfp(open('network.cfg'))
+    cisco_ip = socket.gethostbyname(c.get('cisco', 'hostname'))
+    community = c.get('netgear', 'community')
+    result = {}
+    cisco_table = dict(wired.get_cisco_routing_table(cisco_ip))
+    for host in c.get('netgear', 'hostnames').split():
+        table = wired.get_netgear_mac_table(host, community)
+        traffic = dict(wired.get_netgear_port_traffic(host, community))
+        for port, mac in table:
+            if cisco_table.get(mac) == cisco_ip:
+                uplink_port = port
+        for port, mac in table:
+            if port != uplink_port:
+                result[mac] = {'switch': (host, port), 'traffic': traffic[port]}
+                if mac in cisco_table:
+                    result[mac]['ip'] = cisco_table[mac]
+    for mac, ip, traffic in wireless.get_all_info(c.get('wifi', 'hostname'),
+                                                  c.get('wifi', 'user'),
+                                                  c.get('wifi', 'pass')):
+        result[mac] = {'switch': 'wifi', 'traffic': traffic, 'ip': ip}
+    return result
 
-result = {}
-
-cisco_ip = socket.gethostbyname(c.get('cisco', 'hostname'))
-cisco_table = dict(wired.get_cisco_routing_table(cisco_ip))
-
-netgear_comm = c.get('netgear', 'community')
-for host in c.get('netgear', 'hostnames').split():
-    table = wired.get_netgear_mac_table(host, netgear_comm)
-    for port, mac in table:
-        if cisco_table.get(mac) == cisco_ip:
-            uplink_port = port
-    for port, mac in table:
-        if port != uplink_port:
-            result[mac] = "Connected to switch {0} on port {1}\n".format(host, port)
-
-wifi = dict(c.items('wifi'))
-wifi_data = wireless.get_all_info(wifi['hostname'], wifi['user'], wifi['pass'])
-
-
-for mac, ip, rcvd, sent in wifi_data:
-    result[mac] = result.get(mac, '') + 'Connected to wifi with IP address {0}\n'.format(ip)
-for mac in result:
-    if mac in cisco_table:
-        result[mac] += 'Cisco says it has IP address {0}\n'.format(cisco_table[mac])
-
-for mac in result:
-    print(mac)
-    print(result[mac])
+print(current_stats())
