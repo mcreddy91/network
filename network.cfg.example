@@ -1,0 +1,13 @@
+[cisco]
+hostname: XYZ-ETHER.MIT.EDU
+
+# the community is set in the Netgear web interface
+[netgear]
+hostnames: XYZ-CNUP-SW-1.MIT.EDU XYZ-CNUP-SW-2.MIT.EDU
+community: mycommunity
+
+# enable telnet and set user/pass in the wi-fi controller web interface
+[wifi]
+hostname: XYZ-WIRELESS-CONTROLLER-1.MIT.EDU
+user: myusername
+pass: mypassword
