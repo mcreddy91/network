@@ -29,7 +29,7 @@ def get_netgear_port_traffic(hostname, community):
                             Version = 2,
                             Community = community,
                             DestHost = hostname)
-    return zip(range(1,49), zip(rcvd, sent))
+    return zip(range(1,49), [map(int, k) for k in zip(rcvd, sent)])
 
 def get_cisco_routing_table(hostname):
     """Returns [(mac_addr, ip_addr), ...]."""
@@ -43,3 +43,15 @@ def get_cisco_routing_table(hostname):
                            Community = 'public',
                            DestHost = hostname)
     return zip(map(format_mac, macs), ips)
+
+def get_cisco_inet_traffic(hostname):
+    """Returns (rcvd, sent).  Note that rcvd == inbound."""
+    rcvd = netsnmp.snmpget('.1.3.6.1.2.1.2.2.1.10.49',
+                           Version = 1,
+                           Community = 'public',
+                           DestHost = hostname)[0]
+    sent = netsnmp.snmpget('.1.3.6.1.2.1.2.2.1.16.49',
+                           Version = 1,
+                           Community = 'public',
+                           DestHost = hostname)[0]
+    return int(rcvd), int(sent)

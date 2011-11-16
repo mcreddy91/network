@@ -6,9 +6,11 @@ def current_stats():
     """Return a dict mapping MAC addresses to client information.
     
     Fields of each client information dictionary:
-    'switch' -- either 'wifi' or the tuple (switch_name, port)
-    'ip' -- the most recent known IP address.  Not necessarily current.
-    'traffic' -- the tuple (bytes received, bytes sent).
+    'switch' -- hostname of the switch the client is connected to
+    'port' -- number of the Ethernet port the client is plugged in to
+    'ip' -- the most recent known IP address (not necessarily current)
+    'traffic' -- the tuple (bytes received, bytes sent)
+    'wifi' -- True iff this client is on the wireless network
     """
     c = ConfigParser.ConfigParser()
     c.readfp(open('network.cfg'))
@@ -24,13 +26,14 @@ def current_stats():
                 uplink_port = port
         for port, mac in table:
             if port != uplink_port:
-                result[mac] = {'switch': (host, port), 'traffic': traffic[port]}
+                result[mac] = {'switch': host, 'port': port,
+                               'traffic': traffic[port], 'wifi': False}
                 if mac in cisco_table:
                     result[mac]['ip'] = cisco_table[mac]
     for mac, ip, traffic in wireless.get_all_info(c.get('wifi', 'hostname'),
                                                   c.get('wifi', 'user'),
                                                   c.get('wifi', 'pass')):
-        result[mac] = {'switch': 'wifi', 'traffic': traffic, 'ip': ip}
+        result[mac].update({'wifi': True, 'traffic': traffic, 'ip': ip})
     return result
 
 print(current_stats())
