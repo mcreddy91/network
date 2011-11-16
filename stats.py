@@ -36,4 +36,22 @@ def current_stats():
         result[mac].update({'wifi': True, 'traffic': traffic, 'ip': ip})
     return result
 
-print(current_stats())
+def subtract_stats(now, before):
+    result = {}
+    for mac in now:
+        if mac in before:
+            result[mac] = now[mac]
+            result[mac]['traffic'] = [x-y for x,y in zip(now[mac]['traffic'],
+                                                         before[mac]['traffic'])]
+    return result
+
+s1 = current_stats()
+import time
+time.sleep(60)
+s2 = current_stats()
+
+result = subtract_stats(s2, s1)
+for mac in result:
+    print(mac)
+    print(result[mac])
+    print('\n')
