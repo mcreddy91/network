@@ -33,11 +33,12 @@ def get_netgear_port_traffic(hostname, community):
 
 def get_cisco_routing_table(hostname):
     """Returns [(mac_addr, ip_addr), ...]."""
-    macs = netsnmp.snmpwalk('.1.3.6.1.2.1.3.1.1.2.51.1.18.224',
+    # Limited to 18.* IP addresses by the OIDs.
+    macs = netsnmp.snmpwalk('.1.3.6.1.2.1.3.1.1.2.51.1.18',
                             Version = 1,
                             Community = 'public',
                             DestHost = hostname)
-    ips = netsnmp.snmpwalk('.1.3.6.1.2.1.4.22.1.3.51.18.224',
+    ips = netsnmp.snmpwalk('.1.3.6.1.2.1.4.22.1.3.51.18',
                            Version = 1,
                            Community = 'public',
                            DestHost = hostname)
