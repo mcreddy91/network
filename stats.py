@@ -41,18 +41,7 @@ def subtract_stats(now, before):
     result = {}
     for mac in now:
         if mac in before:
-            result[mac] = now[mac]
+            result[mac] = now[mac].copy()
             result[mac]['traffic'] = [x-y for x,y in zip(now[mac]['traffic'],
                                                          before[mac]['traffic'])]
     return result
-
-s1 = current_stats()
-import time
-time.sleep(5)
-s2 = current_stats()
-
-result = subtract_stats(s2, s1)
-for mac in result:
-    print(mac)
-    print(result[mac])
-    print('\n')
