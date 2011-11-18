@@ -2,7 +2,7 @@
 Module for scripting the telnet interface of a Cisco 4402 wireless controller.
 't' refers to a telnetlib.Telnet object throughout.
 """
-import telnetlib, re
+import telnetlib, re, ConfigParser
 
 def connect(hostname, user, pw):
     """Open up a telnet session to the wireless controller."""
@@ -32,9 +32,14 @@ def get_client_info(t, mac_addr):
     client = data[data.index('Client Statistics:')+1:][:2]
     return (data[9].split()[-1], [int(l.split()[-1]) for l in client])
 
-def get_all_info(hostname, user, pw):
+def get_all_info():
     """Returns [(mac_addr, ip_addr, bytes_rcvd, bytes_sent), ...] for all clients."""
-    t, result = connect(hostname, user, pw), []
+    c = ConfigParser.ConfigParser()
+    c.readfp(open('network.cfg'))
+    hostname = c.get('wifi','hostname')
+    auth = c.get('wifi','user'), c.get('wifi','pass')
+    t = connect(hostname, *auth)
+    result = []
     for mac_addr in get_clients(t):
         try:
             info = get_client_info(t, mac_addr)
