@@ -1,3 +1,7 @@
+[moira]
+# we filter IPs by moira owner to exclude CNUP equipment from results
+invalid: ht-xyz-acl
+
 [cisco]
 hostname: XYZ-ETHER.MIT.EDU
 
