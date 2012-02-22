@@ -15,3 +15,7 @@ community: mycommunity
 hostname: XYZ-WIRELESS-CONTROLLER-1.MIT.EDU
 user: myusername
 pass: mypassword
+
+# APC power distribution unit (not standard CNUP equipment)
+hostname: NOT-STANDARD.MIT.EDU
+community: mycommunity
